@@ -32,14 +32,19 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  static Building _selectedBuilding;
+
   showInfoCard(Building building) {
-    print("pls show card of ${building.name}");
-    setState(() {
-      _showingInfoCard = true;
-    });
+    _selectedBuilding = building;
+    Navigator.of(context).restorablePush(_dialogBuilder);
   }
 
-  bool _showingInfoCard = false;
+  static Route<Object> _dialogBuilder(BuildContext context, Object arguments) {
+    return DialogRoute<void>(
+      context: context,
+      builder: (BuildContext context) => InfoCardDialog.fromBuilding(_selectedBuilding),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +53,10 @@ class _MainScreenState extends State<MainScreen> {
         title: Text("Kampus SGGW"),
       ),
       body: Stack(children: [
-        InteractiveMap(widget.buildings, showInfoCard),
-        InfoCard(),
+        InteractiveMap(
+          widget.buildings,
+          showInfoCard,
+        ),
       ]),
     );
   }

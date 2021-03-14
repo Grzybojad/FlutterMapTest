@@ -30,7 +30,6 @@ class _InteractiveMapState extends State<InteractiveMap> {
       constrained: false,
       minScale: .4,
       maxScale: 2,
-      key: UniqueKey(),
       child: Stack(
         children: [
           Image(
