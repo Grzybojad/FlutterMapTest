@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:maps_demo/interactive_map.dart';
+import 'package:maps_demo/info_card.dart';
+import 'package:maps_demo/building.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,70 +11,46 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Kampus SGGw',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: MapScreen(),
+      home: MainScreen(),
     );
   }
 }
 
-class MapScreen extends StatefulWidget {
+class MainScreen extends StatefulWidget {
+  final List<Building> buildings = [
+    Building(lat: 52.16010, lon: 21.04476, name: "Budynek 32", departments: []),
+    Building(lat: 52.16203, lon: 21.04632, name: "Budynek 34", departments: ["WZIM", "Leśny", "Technologii Drewna"]),
+    Building(lat: 52.16191, lon: 21.04293, name: "Budynek 37", departments: []),
+  ];
+
   @override
-  _MapScreenState createState() => _MapScreenState();
+  _MainScreenState createState() => _MainScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
-  double _scale = 1.0;
-  TransformationController t_contr = TransformationController();
-  final pinImage = Image.asset("assets/pin.png");
+class _MainScreenState extends State<MainScreen> {
+  showInfoCard(Building building) {
+    print("pls show card of ${building.name}");
+    setState(() {
+      _showingInfoCard = true;
+    });
+  }
+
+  bool _showingInfoCard = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Kampus SGGW"),
-        ),
-        body: Center(
-          child: InteractiveViewer(
-            constrained: false,
-            minScale: .5,
-            maxScale: 2,
-            child: Stack(
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  child: Image(
-                    image: AssetImage("assets/sggw_map.png"),
-                  ),
-                ),
-                Positioned.fill(
-                  child: LayoutBuilder(
-                    builder: (_, constraints) => Align(
-                      alignment: Alignment(0.21, -0.33-(0.01*_scale)),
-                      child: SizedBox(
-                        width: 50 / _scale,
-                        child: Align(
-                          heightFactor: 1,
-                          widthFactor: 1,
-                          alignment: Alignment.bottomCenter,
-                          child: pinImage,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            onInteractionUpdate: (ScaleUpdateDetails details) {
-              setState(() {
-                _scale = t_contr.value.getMaxScaleOnAxis();
-              });
-            },
-            transformationController: t_contr
-          ),
-        )
+      appBar: AppBar(
+        title: Text("Kampus SGGW"),
+      ),
+      body: Stack(children: [
+        InteractiveMap(widget.buildings, showInfoCard),
+        InfoCard(),
+      ]),
     );
   }
 }
